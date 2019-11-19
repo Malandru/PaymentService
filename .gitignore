@@ -1,0 +1,10 @@
+.gradle/
+.idea/
+PaymentService.iml
+build/
+gradle/
+gradlew
+gradlew.bat
+libAxis2/
+lib/
+bin/
