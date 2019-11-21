@@ -9,9 +9,9 @@ import javax.jms.Session;
 
 public class VoucherSender extends JmsTemplate
 {
-    public void sendMessage(final String queue, final String message)
+    public void sendMessage(final String message)
     {
-        this.send(queue, new MessageCreator()
+        this.send("queue/voucherQueue", new MessageCreator()
         {
             public Message createMessage(final Session session) throws JMSException
             {

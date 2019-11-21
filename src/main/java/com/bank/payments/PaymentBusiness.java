@@ -4,6 +4,7 @@ import com.bank.PaymentDocument;
 import com.bank.PaymentDocument.Payment;
 import com.bank.VoucherDocument.Voucher;
 import com.bank.VoucherDocument;
+import org.apache.xmlbeans.XmlOptions;
 
 public class PaymentBusiness
 {
@@ -47,16 +48,27 @@ public class PaymentBusiness
             System.out.println("Haciendo transaccion (haciendo pago)...");
             cuentaDao.makeTransaction(payment.getOrigen(), payment.getDestino(), payment.getCantidad());
 
-            System.out.println("Pagado perro");
             voucher.setPagado(true);
+            System.out.println("Pagado perro");
+
+            System.out.println("Agregando fechas...");
+            voucher.setCheckIn(payment.getCheckIn());
+            voucher.setCheckOut(payment.getCheckOut());
+            System.out.println("Fechas agregadas");
         }catch (Exception e)
         {
-            System.out.println("Mostrando errores...");
-            e.printStackTrace();
-            System.out.println("No se pudo realizar el pago :c");
+            System.out.println("Exeption: No se pudo realizar el pago :c");
         }
         /* AQUI SE ENVIA LA RESPUESTA DEL BANCO COMO UN XML*/
-        voucherSender.sendMessage("jms/voucherQueue", voucher.xmlText());
+
+        System.out.println("Agregando propiedades...");
+        XmlOptions options = new XmlOptions();
+        options.put(XmlOptions.SAVE_PRETTY_PRINT);
+        options.put(XmlOptions.SAVE_AGGRESSIVE_NAMESPACES);
+        options.setSaveOuter();
+        System.out.println("Enviando respuesta");
+
+        voucherSender.sendMessage(voucher.xmlText(options));
     }
 
     private Voucher buildVoucher()

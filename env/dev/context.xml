@@ -24,24 +24,17 @@
     <bean id="jndiTemplate" class="org.springframework.jndi.JndiTemplate">
         <property name="environment">
             <props>
-                <prop key="java.naming.factory.url.pkgs">org.jboss.ejb.client.naming</prop>
-                <prop key="jboss.naming.client.ejb.context">true</prop>
-                <prop key="java.naming.factory.initial">org.wildfly.naming.client.WildFlyInitialContextFactory</prop>
+                <prop key="java.naming.factory.initial">org.jnp.interfaces.NamingContextFactory</prop>
                 <prop key="java.naming.provider.url">${consumer.spring.jms.jndi.url}</prop>
+                <prop key="java.naming.factory.url.pkgs">org.jnp.interfaces:org.jboss.naming</prop>
             </props>
         </property>
     </bean>
 
-    <bean id="myTargetConnectionFactory"
+    <bean id="jndiConnectionFactory"
           class="org.springframework.jndi.JndiObjectFactoryBean">
         <property name="jndiTemplate" ref="jndiTemplate"/>
-        <property name="jndiName" value="java:jms/RemoteConnectionFactory"/>
-    </bean>
-
-    <bean id="jndiConnectionFactory" class="org.springframework.jms.connection.UserCredentialsConnectionFactoryAdapter">
-        <property name="targetConnectionFactory" ref="myTargetConnectionFactory"/>
-        <property name="username" value="andru"/>
-        <property name="password" value="cisco"/>
+        <property name="jndiName" value="java:ConnectionFactory"/>
     </bean>
 
     <bean id="jmsTransactionManager" class="org.springframework.jms.connection.JmsTransactionManager">
@@ -66,7 +59,6 @@
         <property name="connectionFactory" ref="jndiConnectionFactory"/>
         <property name="destination" ref="myQueue"/>
         <property name="messageListener" ref="paymentListener"/>
-
         <property name="concurrentConsumers" value="${consumer.spring.jms.concurrent.consumers}"/>
         <property name="maxConcurrentConsumers" value="${consumer.spring.jms.max.concurrent.consumers}"/>
         <property name="autoStartup" value="true"/>
@@ -90,7 +82,7 @@
     </bean>
 
     <!-- *********************************** DataSources *********************************** -->
-    <jee:jndi-lookup id="dataSource" jndi-name="java:jboss/datasources/bankDS"/>
+    <jee:jndi-lookup id="dataSource" jndi-name="java:jdbc/bankDS"/>
     <!-- *********************************** Spring Templates *********************************** -->
     <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
         <property name="dataSource" ref="dataSource" />
